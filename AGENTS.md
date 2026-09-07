@@ -4,18 +4,22 @@ This repository owns the Vercel web project for `rootrecord.cloud`.
 
 ## Scope
 
-- Put RootRecord public web pages, components, static assets, and frontend tests here.
-- Keep the app deployable as an independent Vercel project.
-- Use documented public API contracts for backend data.
+- Put public pages, components, static assets, and frontend tests here.
+- Keep the app independently deployable by Vercel.
+- Use documented public API contracts; do not embed private runtime state.
 - Keep credentials in Vercel environment variables, never in source control.
+
+## Stack
+
+- Next.js (App Router) + TypeScript
+- Deploy target: Vercel only
 
 ## Boundaries
 
-- `RootRecord-Core-Processor`: hosted APIs, ingestion, automation, and long-running jobs.
-- `RootRecord-Core-Ops`: local operator desk and backups.
-- `RootRecord-Core-Node`: MIT-licensed self-hostable node.
-- `RootRecord-RootMC`: all RootMC development.
+- `RootRecord-Core-Processor`: hosted processing and APIs
+- `RootRecord-Core-Ops`: operator controls
+- `RootRecord-RootMC`: RootMC development
 
 ## License
 
-No license. This repository is public for transparency and Vercel deployment only.
+No license. Public for transparency and Vercel deployment only.
