@@ -14,7 +14,7 @@ if not GIT.is_file():
     GIT = Path("git")
 
 SAFE_PATHS = (
-    "src", "public", "app", "package.json", "package-lock.json", "next.config.ts",
+    "src", "public", "app", "app/globals.css", "app/layout.tsx", "app/page.tsx", "package.json", "package-lock.json", "next.config.ts",
     "next-env.d.ts", "tsconfig.json", "vercel.json", "README.md", "AGENTS.md",
     "scripts/auto-push.py",
 )
