@@ -2,7 +2,7 @@
 
 Vercel project for **rootrecord.cloud**.
 
-Blank Next.js (App Router) template — ready to build on.
+Next.js (App Router) Vercel app for the RootRecord public dashboard.
 
 ## Stack
 
@@ -31,4 +31,4 @@ Long-running processing does **not** belong in this repo.
 
 ## Scope
 
-This repo owns the RootRecord public web experience: discovery, Kīlauea and Volcano-area information, public guides, and pages that call documented backend APIs.
+This repo owns the RootRecord public web experience: the live dashboard, discovery, public guides, and Vercel serverless handlers for documented read-only APIs. Long-running processing remains on the AVA Processor behind `AVA_ORIGIN_URL`.
