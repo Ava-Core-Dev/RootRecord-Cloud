@@ -33,7 +33,7 @@ def main() -> int:
         return 0
     if not (REPO / ".git").exists():
         return 0
-    git("add", "-u", "--", *SAFE_PATHS)
+    git("add", "-A", "--", *SAFE_PATHS)
     existing = [path for path in SAFE_PATHS if (REPO / path).exists()]
     if existing:
         git("add", "--", *existing)
