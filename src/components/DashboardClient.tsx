@@ -6,6 +6,8 @@ import StatTile from "./StatTile";
 import DataCard from "./DataCard";
 import GuestChat from "./GuestChat";
 
+import { isOffline, OFFLINE } from "@/lib/desk-api";
+
 interface Props {
   initial: { status: any; solar: any; mc: any; kilauea?: any; weather?: any };
 }
@@ -25,12 +27,17 @@ export default function DashboardClient({ initial }: Props) {
           fetch("/api/kilauea"),
           fetch("/api/weather"),
         ]);
+        const parse = async (r: Response) => {
+          try {
+            const j = await r.json();
+            if (!r.ok || j?.status === OFFLINE) return { status: OFFLINE };
+            return j;
+          } catch {
+            return { status: OFFLINE };
+          }
+        };
         const [status, solar, mc, kilauea, weather] = await Promise.all([
-          sr.ok ? sr.json() : null,
-          mr.ok ? mr.json() : null,
-          mcr.ok ? mcr.json() : null,
-          kr.ok ? kr.json() : null,
-          wr.ok ? wr.json() : null,
+          parse(sr), parse(mr), parse(mcr), parse(kr), parse(wr),
         ]);
         setData({ status, solar, mc, kilauea, weather });
         setLastRefresh(new Date());
@@ -40,7 +47,7 @@ export default function DashboardClient({ initial }: Props) {
   }, []);
 
   const { status, solar, mc, kilauea, weather } = data;
-  const online = !!status;
+  const deskUp = status && !isOffline(status);
   const hstTime = new Intl.DateTimeFormat("en-US", {
     timeZone: "Pacific/Honolulu",
     hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
@@ -53,20 +60,20 @@ export default function DashboardClient({ initial }: Props) {
         <div className={styles.topRow}>
           <StatTile
             label="Root Server"
-            value={online ? "Online" : "Offline"}
-            pill={online ? "green" : "red"}
-            sub={status ? `CPU ${status.cpu_pct ?? "?"}%  ·  RAM ${status.mem_pct ?? "?"}%` : "Device offline"}
+            value={deskUp ? "Online" : OFFLINE}
+            pill={deskUp ? "green" : "red"}
+            sub={deskUp ? `CPU ${status.cpu_pct ?? "?"}%  ·  RAM ${status.mem_pct ?? "?"}%` : OFFLINE}
           />
           <StatTile
             label="Uptime"
-            value={status ? `${Math.floor(status.uptime_s / 3600)}h ${Math.floor((status.uptime_s % 3600) / 60)}m` : "—"}
+            value={deskUp ? `${Math.floor(status.uptime_s / 3600)}h ${Math.floor((status.uptime_s % 3600) / 60)}m` : OFFLINE}
             pill="cyan"
-            sub={status?.hostname ?? ""}
+            sub={deskUp ? (status?.hostname ?? "") : OFFLINE}
           />
           <StatTile
             label="Minecraft"
-            value={mc?.online ? `${mc.players?.online ?? 0} / ${mc.players?.max ?? 0}` : "Offline"}
-            pill={mc?.online ? "green" : "red"}
+            value={mc && !isOffline(mc) && mc?.online ? `${mc.players?.online ?? 0} / ${mc.players?.max ?? 0}` : OFFLINE}
+            pill={mc && !isOffline(mc) && mc?.online ? "green" : "red"}
             sub="play.rootmc.net"
           />
           <StatTile

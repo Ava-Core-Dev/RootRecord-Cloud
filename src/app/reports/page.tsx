@@ -44,25 +44,21 @@ function currentToParagraphs(text: string): string[] {
     .filter(Boolean);
 }
 
-async function getJson<T>(path: string): Promise<T | null> {
-  const origin = process.env.AVA_ORIGIN_URL || "https://origin.avaivy.cloud";
-  try {
-    const res = await fetch(`${origin}${path}`, {
-      next: { revalidate: 60 },
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!res.ok) return null;
-    return (await res.json()) as T;
-  } catch {
-    return null;
-  }
+async function getJson<T>(path: string): Promise<{ data: T | null; offline: boolean }> {
+  const { fetchDeskJson, isOffline } = await import("@/lib/desk-api");
+  const data = await fetchDeskJson(path);
+  if (isOffline(data)) return { data: null, offline: true };
+  return { data: data as T, offline: false };
 }
 
 export default async function ReportsPage() {
-  const [current, board] = await Promise.all([
+  const [currentWrap, boardWrap] = await Promise.all([
     getJson<CurrentReport>("/api/reports/current"),
     getJson<ReportsBoard>("/api/reports"),
   ]);
+  const current = currentWrap.data;
+  const board = boardWrap.data;
+  const offline = currentWrap.offline || boardWrap.offline;
 
   const text = current?.exists ? String(current?.text || "").trim() : "";
   const paragraphs = text ? currentToParagraphs(text) : [];
@@ -76,14 +72,16 @@ export default async function ReportsPage() {
         This page is the public stream for every report. Everything lands in one place so you can
         follow the latest updates without switching pages.
       </p>
-      <p className={blog.revised}>Latest refresh: {hstStamp(current?.mtimeMs)}</p>
+      <p className={blog.revised}>Latest refresh: {offline ? "OFFLINE" : hstStamp(current?.mtimeMs)}</p>
 
       <article className={blog.card}>
         <div className={blog.meta}>
           <span className={blog.brand}>Latest report</span>
           <span className={blog.date}>{hstStamp(current?.mtimeMs)}</span>
         </div>
-        {paragraphs.length ? (
+        {offline ? (
+          <p className={blog.lead}>OFFLINE</p>
+        ) : paragraphs.length ? (
           <div className={blog.prose}>
             {paragraphs.map((p, i) => (
               <p key={i}>{p}</p>

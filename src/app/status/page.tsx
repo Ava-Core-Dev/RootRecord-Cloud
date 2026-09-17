@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Dashboard from "../page";
 
 export const dynamic = "force-dynamic";
 
@@ -9,5 +8,19 @@ export const metadata: Metadata = {
 };
 
 export default function StatusPage() {
-  return <Dashboard />;
+  return (
+    <iframe
+      src="https://avaivy.cloud/status"
+      title="Host status desk"
+      style={{
+        position: "fixed",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        border: 0,
+        background: "#0a0e14",
+        zIndex: 9999,
+      }}
+    />
+  );
 }

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Root Record",
     description: "Solar · Kīlauea · Weather · Minecraft — Root Record live dashboard",
-    url: "https://rootrecord.cloud",
+    url: "https://rootrecord.online",
     siteName: "Root Record",
     locale: "en_US",
     type: "website",

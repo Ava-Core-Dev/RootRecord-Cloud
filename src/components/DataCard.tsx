@@ -18,7 +18,9 @@ export default function DataCard({ title, data, keys, placeholder }: Props) {
   return (
     <div className={styles.card}>
       <p className={styles.title}>{title}</p>
-      {data && keys ? (
+      {data && data.status === "OFFLINE" ? (
+        <p className={styles.placeholder}>OFFLINE</p>
+      ) : data && keys ? (
         <table className={styles.table}>
           <tbody>
             {keys.map(k => (
