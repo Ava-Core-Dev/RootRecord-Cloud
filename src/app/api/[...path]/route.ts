@@ -23,6 +23,10 @@ const PUBLIC_EXACT = new Set([
   "/api/minecraft/status",
 ]);
 
+function apiPath(segments: string[]) {
+  return `/api/${segments.join("/")}`;
+}
+
 function allowed(path: string) {
   return PUBLIC_EXACT.has(path) || path.startsWith("/api/photos/file/");
 }
@@ -52,10 +56,10 @@ async function proxy(req: Request, path: string) {
 
 export async function GET(req: Request, context: { params: Promise<{ path: string[] }> }) {
   const { path } = await context.params;
-  return proxy(req, `/${path.join("/")}`);
+  return proxy(req, apiPath(path));
 }
 
 export async function HEAD(req: Request, context: { params: Promise<{ path: string[] }> }) {
   const { path } = await context.params;
-  return proxy(req, `/${path.join("/")}`);
+  return proxy(req, apiPath(path));
 }
